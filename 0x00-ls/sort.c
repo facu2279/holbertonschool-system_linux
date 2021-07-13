@@ -1,3 +1,4 @@
+#include "holberton.h"
 /**
  * hsort - sorts a bidimensional array by alphanumeric, case insensitive
  * @array: array to sort
