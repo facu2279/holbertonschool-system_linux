@@ -1,3 +1,6 @@
+#ifndef HOLBERTON_H
+#define HOLBERTON_H
+
 #include <stdio.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -12,3 +15,4 @@ void printarr(char **array);
 int strcicmp(char *a, char *b);
 
 struct dirent *read;
+#endif
