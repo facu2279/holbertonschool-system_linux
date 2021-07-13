@@ -1,41 +1,88 @@
 #include "holberton.h"
-
-int main()
+/**
+ * main - main function
+ * @argc: number of arguments
+ * @argv: array of arguments
+ * Return: returns 0 when run correctly
+ */
+int main(int argc, char *argv[])
 {
-    DIR *dir;
-    int i = 0;
-    char **array;
+	int i = 0;
+	char **array = NULL;
 
-    dir = opendir(".");
+	if (argc != 1)
+	{
+		argv = hsort(argv);
+		for (i = 1; i < argc; i++)
+		{
+			array = bring_array(argv[i]);
+			if (argv[i][strlen(argv[i]) - 1] == '/')
+			{
+				argv[i][strlen(argv[i]) - 1] = '\0';
+			}
+			if (argc > 2)
+				if (i > 1)
+					printf("\n");
+				printf("%s/:\n", argv[i]);
+			array = hsort(array);
+			printarr(array);
+		}
+	}
+	else
+	{
+		array = bring_array(".");
+		array = hsort(array);
+		printarr(array);
+	}
 
-    while ((read = readdir(dir)) != NULL)
-        if (read->d_name[0] != '.')
-            i++;
-
-
-    dir = opendir(".");
-
-    array = malloc(i * sizeof(char *) + 1);
-    if (!array)
-        printf("error malloc");
-    i = 0;
-    while ((read = readdir(dir)) != NULL)
-        if (read->d_name[0] != '.')
-        {
-            array[i] = read->d_name;
-            i++;
-        }
-    array[i] = '\0';
-    print_array(array);
-    closedir(dir);
-    return(0);
+	return (0);
 }
 
-void print_array(char **array)
+/**
+ * bring_array - puts all the things that are in a specific directory
+ * into an array
+ * @path: pwd to a specific array
+ * Return: returns the array
+ */
+char **bring_array(char *path)
 {
-    int i;
+	DIR *dir;
+	unsigned int size = 0;
+	int i = 0;
+	char **array = NULL;
 
-    for (i = 0; array[i] != '\0'; i++)
-        printf("%s ", array[i]);
-    printf("\n");
+	dir = opendir(path);
+	while ((read = readdir(dir)) != NULL)
+		if (read->d_name[0] != '.')
+			size++;
+
+	array = malloc(size * sizeof(char *) + 1);
+	if (array == NULL)
+		exit(98);
+
+	dir = opendir(path);
+	while ((read = readdir(dir)) != NULL)
+		if (read->d_name[0] != '.')
+		{
+			array[i] = read->d_name;
+			i++;
+		}
+	array[i] = '\0';
+
+	closedir(dir);
+
+	return (array);
+}
+
+/**
+ * printarr - prints an array
+ * @array: array to be printed
+ */
+void printarr(char **array)
+{
+	int i = 0;
+
+	for (i = 0; array[i] != '\0'; i++)
+		printf("%s  ", array[i]);
+	printf("\n");
 }
