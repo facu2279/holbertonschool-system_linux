@@ -4,7 +4,7 @@
 * main - main function
 * Return: returns 0 when run correctly
 */
-int main()
+int main(void)
 {
 	struct dirent *read;
 	DIR *dir;
