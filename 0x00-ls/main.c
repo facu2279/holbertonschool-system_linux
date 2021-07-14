@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <dirent.h>
-struct dirent *read;
 /**
 * main - main function
 * Return: returns 0 when run correctly
 */
 int main()
 {
+	struct dirent *read;
 	DIR *dir;
 
 	dir = opendir(".");
