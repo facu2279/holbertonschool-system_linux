@@ -1,15 +1,30 @@
 #include "holberton.h"
 /**
 * main - main function
+* @argc: asda
+* @argv: asdas
 * Return: returns 0 when run correctly
 */
 
-int main(void)
+int main(int argc, char *argv[])
 {
+	int i;
 
-	print_dir(".");
+	if (argc == 1)
+		print_dir(".");
+	else
+	{
+		for (i = 1; i < argc; i++)
+		{
+			printf("%s:\n", argv[i]);
+			print_dir(argv[i]);
+			if (i != argc - 1)
+				printf("\n");
+		}
+	}
 	return (0);
 }
+
 
 /**
 * print_dir - print_dir
