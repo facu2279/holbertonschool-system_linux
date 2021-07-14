@@ -1,12 +1,9 @@
-#include <stdio.h>
-#include <dirent.h>
-#include <stdlib.h>
-void print_dir(char *path);
-int dir_check(char *dir_name);
+#include "holberton.h"
 /**
 * main - main function
 * Return: returns 0 when run correctly
 */
+
 int main(int argc, char *argv[])
 {
 	int i;
@@ -34,6 +31,10 @@ int main(int argc, char *argv[])
 	return (0);
 }
 
+/**
+* print_dir - print_dir
+* @path: aaa
+*/
 void print_dir(char *path)
 {
 	struct dirent *read;
@@ -44,6 +45,23 @@ void print_dir(char *path)
 		if (read->d_name[0] != '.')
 			printf("%s ", read->d_name);
 	printf("\n");
+	closedir(dir);
+
+}
+
+/**
+* print_dir_vertical - print_dir
+* @path: aaa
+*/
+void print_dir_vertical(char *path)
+{
+	struct dirent *read;
+	DIR *dir;
+
+	dir = opendir(path);
+	while ((read = readdir(dir)) != NULL)
+		if (read->d_name[0] != '.')
+			printf("%s\n", read->d_name);
 	closedir(dir);
 
 }
