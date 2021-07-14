@@ -1,8 +1,6 @@
 #include "holberton.h"
 /**
  * main - main function
- * @argc: number of arguments
- * @argv: array of arguments
  * Return: returns 0 when run correctly
  */
 int main()
