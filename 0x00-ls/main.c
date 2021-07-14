@@ -18,7 +18,7 @@ int main()
 
 	closedir(dir);
 
-	array = malloc(size * sizeof(char *);
+	array = malloc(size * sizeof(char *));
 	if (array == NULL)
 		exit(98);
 
