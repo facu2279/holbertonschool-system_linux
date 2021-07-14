@@ -12,7 +12,8 @@ int main()
 	dir = opendir(".");
 
 	while ((read = readdir(dir)) != NULL)
-    	printf("%s ", read->d_name);
+    	if (read->d_name[0] != '.')
+			printf("%s ", read->d_name);
 	printf("\n");
 	closedir(dir);
 
