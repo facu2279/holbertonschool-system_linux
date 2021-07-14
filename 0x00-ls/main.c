@@ -38,10 +38,13 @@ int main(int argc, char *argv[])
 		{
 			for (i = 2; i < argc; i++)
 			{
-				printf("%s:\n", argv[i]);
-				print_dir_vertical(argv[i]);
-				if (i != argc - 1)
-					printf("\n");
+				if (argv[i][0] != '-')
+				{
+					printf("%s:\n", argv[i]);
+					print_dir_vertical(argv[i]);
+					if (i != argc - 1)
+						printf("\n");
+				}
 			}
 		}
 	}
