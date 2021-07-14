@@ -16,8 +16,11 @@ int main(int argc, char *argv[])
 		{
 			if (dir_check(argv[i]) == 0)
 			{
-				fprintf(stderr, "./hls: cannot access %s: No such file or directory\n", argv[i]);
-				exit(2);
+				/**
+				* fprintf(stderr, "./hls: cannot access %s: No such file or directory\n", argv[i]);
+				* exit(2);
+				*/
+				printf("agregar errores\n");
 			}
 			else
 			{
