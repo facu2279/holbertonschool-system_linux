@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 			{
 				printf("%s:\n", argv[i]);
 				print_dir(argv[i]);
+				if (i != argc - 1)
+					printf("\n");
 			}
 		}
 	}
