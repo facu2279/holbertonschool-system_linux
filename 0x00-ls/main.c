@@ -5,62 +5,26 @@
  * @argv: array of arguments
  * Return: returns 0 when run correctly
  */
-int main(int argc, char *argv[])
+int main()
 {
-	int i = 0;
-	char **array = NULL;
 
-	if (argc != 1)
-	{
-		argv = hsort(argv);
-		for (i = 1; i < argc; i++)
-		{
-			array = bring_array(argv[i]);
-			if (argv[i][strlen(argv[i]) - 1] == '/')
-			{
-				argv[i][strlen(argv[i]) - 1] = '\0';
-			}
-			if (argc > 2)
-				if (i > 1)
-					printf("\n");
-				printf("%s/:\n", argv[i]);
-			array = hsort(array);
-			printarr(array);
-		}
-	}
-	else
-	{
-		array = bring_array(".");
-		array = hsort(array);
-		printarr(array);
-	}
-
-	return (0);
-}
-
-/**
- * bring_array - puts all the things that are in a specific directory
- * into an array
- * @path: pwd to a specific array
- * Return: returns the array
- */
-char **bring_array(char *path)
-{
 	DIR *dir;
 	unsigned int size = 0;
 	int i = 0;
 	char **array = NULL;
 
-	dir = opendir(path);
+	dir = opendir(".");
 	while ((read = readdir(dir)) != NULL)
 		if (read->d_name[0] != '.')
 			size++;
+
+	closedir(dir);
 
 	array = malloc(size * sizeof(char *) + 1);
 	if (array == NULL)
 		exit(98);
 
-	dir = opendir(path);
+	dir = opendir(".");
 	while ((read = readdir(dir)) != NULL)
 		if (read->d_name[0] != '.')
 		{
@@ -71,7 +35,8 @@ char **bring_array(char *path)
 
 	closedir(dir);
 
-	return (array);
+	printarr(array);
+	return (0);
 }
 
 /**
