@@ -8,7 +8,5 @@
 #include <errno.h>
 #include <ctype.h>
 
-void printarr(char **array);
-
 struct dirent *read;
 #endif
