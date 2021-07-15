@@ -44,8 +44,8 @@ gcc -Wall -Werror -Wextra -pedantic *.c -o hls
 ```
 
 ## Authors
-Made by [Facundo Diaz](https://github.com/facu2279) to Holberton School 2021
+Made by [Tomas de Castro](https://github.com/tomi1710) to Holberton School 2021
 
 Social Networks
 -------------------
-- [Linkedin](https://www.linkedin.com/in/facundo-d%C3%ADaz-720110149/)
+- [Linkedin](https://www.linkedin.com/in/tomas-de-castro-guelfi-1872a1211/)
