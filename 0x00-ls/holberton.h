@@ -20,9 +20,7 @@ char **dir_finder(int argc, char *argv[]);
 void hfree(char **dirs, char *options);
 int dir_check2(char *dir_name);
 int else_main(int numero, char **dirs, int i, int bandera_numero,
-int salto, int dirs_len, char *array, int retoptions, char *options);
+int dirs_len, char *array, int retoptions, char *options);
 void handle_options(int retoptions, char *array);
 char *second_part_bring_dir(char *path, char *array2);
-void morejaja(int salto, int i, int file_count2, int dirs_len,
-char **dirs, int retoptions, char *array);
 #endif
