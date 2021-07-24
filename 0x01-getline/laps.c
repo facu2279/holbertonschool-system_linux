@@ -10,24 +10,21 @@ static unsigned int size_autos, dif_size;
  */
 void race_state(int *id, size_t size)
 {
+	char snum[30];
+	char snumm[30];
 	unsigned int i = 0, j = 0, count = 0;
 
 	if (size == 0)
-		_free();
+	{
+		for (i = 0; i < size_autos; i++)
+			free(autos[i]);
+		free(autos);
+	}
 	else
 	{
 		dif_size = 0;
 		if (autos == NULL)
-		{
-			_malloc(size);
-			if (size_autos == 0)
-				size_autos = size;
-			for (i = 0; i < size_autos; i++)
-			{
-				autos[i][0] = id[j];
-				j++;
-			}
-		}
+			_malloc(size, id);
 		else
 		{
 			sum_lap(id, size);
@@ -44,31 +41,48 @@ void race_state(int *id, size_t size)
 				size_autos = size;
 			_realloc(id, size);
 		}
-		printf("Race state:\n");
+		write(STDOUT_FILENO, "Race state:\n", 12);
+		hsort();
 		for (i = 0; i < size_autos; i++)
-		{
-			printf("Car %i [%i laps]\n", autos[i][0], autos[i][1]);
-		}
+			write(STDOUT_FILENO, "Car ", 4);
+			itoa(autos[i][0], snum, 10);
+			write(STDOUT_FILENO, snum, 3);
+			write(STDOUT_FILENO, "[", 1);
+			itoa(autos[i][1], snumm, 10);
+			write(STDOUT_FILENO, snumm, 3);
+			write(STDOUT_FILENO, " laps]\n", 7);
 	}
 }
 
 /**
  * _malloc - mallocs when the array = NULL
  * @size: size of this array
+ * @id: array
  */
-void _malloc(int size)
+void _malloc(int size, int *id)
 {
-	int i = 0;
+	unsigned int i = 0;
+	int j = 0;
 
 	autos = malloc((size) * sizeof(int *));
 	if (autos == NULL)
 		exit(1);
-	for (i = 0; i < size; i++)
+	for (j = 0; j < size; j++)
 	{
-		autos[i] = (int *)malloc(sizeof(int) * 2);
-		autos[i][1] = 0;
+		autos[j] = (int *)malloc(sizeof(int) * 2);
+		autos[j][1] = 0;
 		if (autos[i] == NULL)
 			exit(1);
+	}
+	if (size_autos == 0)
+		size_autos = size;
+	j = 0;
+	for (i = 0; i < size_autos; i++, j++)
+	{
+		autos[i][0] = id[j];
+		write(STDOUT_FILENO, "Car ", 4);
+		write(STDOUT_FILENO, id[i], 3);
+		write(STDOUT_FILENO, " joined the race\n", 17);
 	}
 }
 
@@ -108,6 +122,9 @@ void _realloc(int *id, size_t size)
 		if (count == 0)
 		{
 			autos[guardar][0] = id[i];
+			write(STDOUT_FILENO, "Car ", 4);
+			write(STDOUT_FILENO, id[i], 3);
+			write(STDOUT_FILENO, " joined the race\n", 17);
 			size_autos++;
 			guardar++;
 		}
@@ -140,15 +157,29 @@ void sum_lap(int *id, int size)
 }
 
 /**
- * _free - frees
+ * hsort - sorts autos
  */
-void _free(void)
+void hsort(void)
 {
-	unsigned int i;
+	int a = 0, b = 0;
+	unsigned int j, count = 0;
 
-	for (i = 0; i < size_autos; i++)
+	while (count != (size_autos - 1))
 	{
-		free(autos[i]);
+		count = 0;
+		for (j = 0; j < (size_autos - 1); j++)
+		{
+			if (autos[j][0] > autos[j + 1][0])
+			{
+				a = autos[j][0];
+				b = autos[j][1];
+				autos[j][0] = autos[j + 1][0];
+				autos[j][1] = autos[j + 1][1];
+				autos[j + 1][0] = a;
+				autos[j + 1][1] = b;
+				count--;
+			}
+			count++;
+		}
 	}
-	free(autos);
 }

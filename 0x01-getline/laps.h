@@ -4,11 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 void race_state(int *id, size_t size);
-void _malloc(int size);
+void _malloc(int size, int *id);
 void _realloc(int *id, size_t size);
 void sum_lap(int *id, int size);
-void _free(void);
+void hsort(void);
+int _strlen(char *s);
 
 #endif
