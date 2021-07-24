@@ -1,185 +1,141 @@
 #include "laps.h"
 
-static int **autos;
-static unsigned int size_autos, dif_size;
-
+static race_car *race_cars;
 /**
- * race_state - keeps track of the number of laps made by several cars in arace
- * @id: array of int representing the “identifier” of each car
- * @size: size of this array
+ * race_state - shows the state of the race
+ * @id: array of ids of cars in the race
+ * @size: size of the id array
+ *
+ * Return: Nothing
  */
 void race_state(int *id, size_t size)
 {
-	char snum[30];
-	char snumm[30];
-	unsigned int i = 0, j = 0, count = 0;
+	race_car *temp = NULL, *new_car = NULL;
+	size_t i = 0, create_car = 1;
 
 	if (size == 0)
 	{
-		for (i = 0; i < size_autos; i++)
-			free(autos[i]);
-		free(autos);
+		free_list(&race_cars);
+		return;
 	}
-	else
+	temp = race_cars;
+	for (i = 0; i < size; i++)
 	{
-		dif_size = 0;
-		if (autos == NULL)
-			_malloc(size, id);
-		else
+		race_cars = temp;
+		while (race_cars)
 		{
-			sum_lap(id, size);
-			for (i = 0; i < size; i++)
-			{
-				count = 0;
-				for (j = 0; j < size_autos; j++)
-					if (id[i] == autos[j][0])
-						count = 1;
-				if (count == 0)
-					dif_size++;
-			}
-			if (size_autos == 0)
-				size_autos = size;
-			_realloc(id, size);
+			if (race_cars->id == id[i])
+				race_cars->laps++;
+			race_cars = race_cars->next;
 		}
-		write(STDOUT_FILENO, "Race state:\n", 12);
-		hsort();
-		for (i = 0; i < size_autos; i++)
-			write(STDOUT_FILENO, "Car ", 4);
-			itoa(autos[i][0], snum, 10);
-			write(STDOUT_FILENO, snum, 3);
-			write(STDOUT_FILENO, "[", 1);
-			itoa(autos[i][1], snumm, 10);
-			write(STDOUT_FILENO, snumm, 3);
-			write(STDOUT_FILENO, " laps]\n", 7);
 	}
+	for (i = 0; i < size; i++)
+	{
+		race_cars = temp;
+		create_car = detect_car(race_cars, id[i]);
+		if (create_car)
+		{
+			new_car = malloc(sizeof(race_car));
+			new_car->id = id[i];
+			new_car->laps = 0;
+			printf("Car %d joined the race\n", new_car->id);
+			sorted_insert(&race_cars, &new_car);
+			temp = race_cars;
+		}
+	}
+	print_cars(temp);
+}
+/**
+ * print_cars - prints the cars in the array
+ * @temp: linked list of cars in the race
+ *
+ * Return: Nothing
+ */
+void print_cars(race_car *temp)
+{
+	race_cars = temp;
+	printf("Race state:\n");
+	while (race_cars)
+	{
+		printf("Car %d [%d laps]\n", race_cars->id, race_cars->laps);
+		race_cars = race_cars->next;
+	}
+	race_cars = temp;
+}
+/**
+ * sorted_insert - inserts sorted by id in the linked list
+ * @cars: linked list of cars
+ * @new_car: new car to be inserted
+ *
+ * Return: Nothing
+ */
+void sorted_insert(race_car **cars, race_car **new_car)
+{
+	race_car *temp = NULL, *initial = NULL;
+
+	initial = *cars;
+	if (!cars)
+		return;
+	if (*cars == NULL)
+	{
+		*cars = *new_car;
+		(*new_car)->next = NULL;
+		return;
+	}
+	if ((*new_car)->id < (*cars)->id)
+	{
+		(*new_car)->next = *cars;
+		*cars = *new_car;
+		return;
+	}
+	while ((*cars)->next)
+	{
+		if ((*new_car)->id < (*cars)->next->id)
+		{
+			temp = (*cars)->next;
+			(*cars)->next = *new_car;
+			(*new_car)->next = temp;
+			*cars = initial;
+			return;
+		}
+		*cars = (*cars)->next;
+	}
+	(*cars)->next = *new_car;
+	(*new_car)->next = NULL;
+	*cars = initial;
+}
+/**
+ * free_list - frees the memory of the linked list
+ * @cars: linked list of cars
+ *
+ * Return: Nothing
+ */
+void free_list(race_car **cars)
+{
+	race_car *temp = NULL;
+
+	while (*cars)
+	{
+		temp = (*cars)->next;
+		free(*cars);
+		*cars = temp;
+	}
+	*cars = NULL;
 }
 
 /**
- * _malloc - mallocs when the array = NULL
- * @size: size of this array
- * @id: array
+ * detect_car - detects if car is already on the race
+ * @cars: linked list of cars
+ * @car_id: id of the card to register
+ * Return: 1 if car has to be created, 0 otherwise
  */
-void _malloc(int size, int *id)
+int detect_car(race_car *cars, int car_id)
 {
-	unsigned int i = 0;
-	int j = 0;
-
-	autos = malloc((size) * sizeof(int *));
-	if (autos == NULL)
-		exit(1);
-	for (j = 0; j < size; j++)
+	while (cars)
 	{
-		autos[j] = (int *)malloc(sizeof(int) * 2);
-		autos[j][1] = 0;
-		if (autos[i] == NULL)
-			exit(1);
+		if (cars->id == car_id)
+			return (0);
+		cars = cars->next;
 	}
-	if (size_autos == 0)
-		size_autos = size;
-	j = 0;
-	for (i = 0; i < size_autos; i++, j++)
-	{
-		autos[i][0] = id[j];
-		write(STDOUT_FILENO, "Car ", 4);
-		write(STDOUT_FILENO, id[i], 3);
-		write(STDOUT_FILENO, " joined the race\n", 17);
-	}
-}
-
-/**
- * _realloc - reallocs the size of the malloc in order to include knew cars
- * @id: array of int representing the “identifier” of each car
- * @size: size of this array
- */
-void _realloc(int *id, size_t size)
-{
-	unsigned int start = 0, new_size, i, j, count = 0, save = 0, guardar;
-	size_t new_sizet = 0;
-
-	guardar = size_autos;
-	new_size = (size_autos * 8) + (dif_size * 8);
-	new_sizet = (size_t)new_size;
-	autos = realloc(autos, new_sizet);
-
-	start = size_autos;
-	save = autos[0][0];
-	for (; start < (size_autos + dif_size); start++)
-	{
-		autos[start] = (int *)malloc(sizeof(int) * 2);
-		autos[start][1] = 0;
-	}
-	autos[0][0] = save;
-	for (i = 0; i < (size); i++)
-	{
-		count = 0;
-		for (j = 0; j < size_autos; j++)
-		{
-			if (id[i] == autos[j][0])
-			{
-				count = 1;
-			}
-		}
-		if (count == 0)
-		{
-			autos[guardar][0] = id[i];
-			write(STDOUT_FILENO, "Car ", 4);
-			write(STDOUT_FILENO, id[i], 3);
-			write(STDOUT_FILENO, " joined the race\n", 17);
-			size_autos++;
-			guardar++;
-		}
-	}
-
-	if (size_autos == 0)
-		size_autos = size;
-}
-
-/**
- * sum_lap - sums laps to the mai array
- * @id: array of int representing the “identifier” of each car
- * @size: size of this array
- */
-void sum_lap(int *id, int size)
-{
-	unsigned int j;
-	int i;
-
-	for (i = 0; i < (size); i++)
-	{
-		for (j = 0; j < size_autos; j++)
-		{
-			if (id[i] == autos[j][0])
-			{
-				autos[j][1]++;
-			}
-		}
-	}
-}
-
-/**
- * hsort - sorts autos
- */
-void hsort(void)
-{
-	int a = 0, b = 0;
-	unsigned int j, count = 0;
-
-	while (count != (size_autos - 1))
-	{
-		count = 0;
-		for (j = 0; j < (size_autos - 1); j++)
-		{
-			if (autos[j][0] > autos[j + 1][0])
-			{
-				a = autos[j][0];
-				b = autos[j][1];
-				autos[j][0] = autos[j + 1][0];
-				autos[j][1] = autos[j + 1][1];
-				autos[j + 1][0] = a;
-				autos[j + 1][1] = b;
-				count--;
-			}
-			count++;
-		}
-	}
+	return (1);
 }
