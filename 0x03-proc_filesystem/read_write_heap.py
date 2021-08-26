@@ -40,9 +40,7 @@ def modificar_file(pid, string, new):
         memoria.seek(dict["start"])
         content = memoria.read(dict["end"] - dict["start"])
         index = content.index(bytes(string, "ASCII"))
-        print(content)
-        print("[*] Found string")
-        print("[*] Replacing string")
+        print(content + "\n[*] Found string\n[*] Replacing string")
         memoria.seek(dict["start"] + index)
         memoria.write(bytes(new + "\0", "ASCII"))
 
