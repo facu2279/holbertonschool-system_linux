@@ -66,8 +66,12 @@ def escribir(pid, search_bytes, replace_bytes, heap_start, heap_end):
         print("Error in mem: {}".format(err))
         exit(1)
 
-pid, search_bytes, replace_bytes = cambiar()
-print("{} for {} in PID {}".format(search_bytes, replace_bytes, pid))
-heap_start, heap_end = posiciones(pid)
-print("Heap bytes: 0x{:02x} - 0x{:02x}".format(heap_start, heap_end))
-escribir(pid, search_bytes, replace_bytes, heap_start, heap_end)
+def main():
+    pid, search_bytes, replace_bytes = cambiar()
+    print("{} for {} in PID {}".format(search_bytes, replace_bytes, pid))
+    heap_start, heap_end = posiciones(pid)
+    print("Heap bytes: 0x{:02x} - 0x{:02x}".format(heap_start, heap_end))
+    escribir(pid, search_bytes, replace_bytes, heap_start, heap_end)
+
+if __name__ == "__main__":
+    main()
