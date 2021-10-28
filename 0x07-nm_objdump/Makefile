@@ -1,3 +1,5 @@
+# -*- MakeFile -*-
+
 NAME0 = hnm
 NAME1 = hobjdump 
 
