@@ -1,0 +1,106 @@
+#include "strace.h"
+
+/**
+ * print_parameters - entry to get parameters
+ * Desc: get_parameters function to print parametres of a given syscall
+ * @regs: struct with the register syscall
+ * Return: nothing
+ */
+void get_parameters(struct user_regs_struct regs)
+{
+	size_t nb_params, i = 0;
+	unsigned long par[6] = {0};
+
+	par[0] = (unsigned long) regs.rdi;
+	par[1] = (unsigned long) regs.rsi;
+	par[2] = (unsigned long) regs.rdx;
+	par[3] = (unsigned long) regs.r10;
+	par[4] = (unsigned long) regs.r8;
+	par[5] = (unsigned long) regs.r9;
+
+	nb_params = syscalls_64_g[(unsigned long)regs.orig_rax].nb_params;
+
+	while (i < nb_params)
+	{
+		if (i > 0)
+			printf(", ");
+		if (syscalls_64_g[(unsigned long) regs.orig_rax].params[i] == VARARGS)
+			printf("...");
+		else if (syscalls_64_g[(unsigned long) regs.orig_rax].params[i] != VOID)
+			printf("%#lx", par[i]);
+		i++;
+	}
+}
+
+/**
+ * tra_ce - entry to trace
+ * Desc: tra_ce function that traces a child process
+ * @av: argument
+ * @en: environ for execve
+ * Return: void function
+ */
+void tra_ce(char **av, char **en)
+{
+	ptrace(PTRACE_TRACEME, 0, 0, 0);
+	kill(getpid(), SIGSTOP);
+	if (execve(av[1], av + 1, en) == -1)
+	{
+		dprintf(STDERR_FILENO, "Fork failed: %d\n", errno);
+		exit(-1);
+	}
+}
+
+/**
+* main - entry to main function
+*
+* Desc: main function that executes and traces a given command
+* using ptrace to get the syscall and prints name and returns
+* value in hexadecimal
+*
+* @ac: number of arguments
+* @av: list of arguments
+* @en: list of environ variables
+* Return: 0 on success, 1 otherwise
+*/
+int main(int ac, char **av, char **en)
+{
+	pid_t child = 0;
+	int status = 0, flag = 0;
+	struct user_regs_struct regs;
+
+	if (ac < 2)
+	{
+		printf("Usage: %s command [args...]\n", av[0]);
+		return (1);
+	}
+	setbuf(stdout, NULL);
+	child = fork();
+	if (child == 0)
+	{
+		tra_ce(av, en);
+	}
+	else
+	{
+		wait(&status);
+		if (WIFEXITED(status))
+			return (0);
+		ptrace(PTRACE_SYSCALL, child, NULL, NULL);
+		while (wait(&status) && !WIFEXITED(status))
+		{
+			memset(&regs, 0, sizeof(regs));
+			ptrace(PTRACE_GETREGS, child, NULL, &regs);
+			if (flag)
+				(printf(") = %#lx\n",
+					(unsigned long) regs.rax), flag = 0);
+			if (WSTOPSIG(status) == SIGTRAP && (long) regs.rax == -38)
+			{
+				flag = 1;
+				printf("%s(", syscalls_64_g[regs.orig_rax].name);
+				get_parameters(regs);
+			}
+			ptrace(PTRACE_SYSCALL, child, NULL, NULL);
+		}
+		printf(") = ?\n");
+	}
+	return (0);
+}
